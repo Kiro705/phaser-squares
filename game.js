@@ -1,6 +1,6 @@
 //set width and height variables for game
-var width = 480;
-var height = 320;
+var width = 500;
+var height = 500;
 //create game object and initialize the canvas
 var game = new Phaser.Game(width, height, Phaser.AUTO, null, {preload: preload, create: create, update: update});
 
@@ -14,13 +14,15 @@ var scoreText;
 
 function preload() {
 	//set background color of canvas
-	game.stage.backgroundColor = '#eee';
+	// game.stage.backgroundColor = '#eee';
 
 	//load assets
 	game.load.image('player', 'asset/blue-square.png');
 	game.load.image('food', 'asset/red-square.png');
+	game.load.image('background', 'asset/background.jpg');
 }
 function create() {
+	const background = game.add.tileSprite(0, 0, width, height, 'background');
 	//start arcade physics engine
 	game.physics.startSystem(Phaser.Physics.ARCADE);
 
@@ -51,6 +53,11 @@ function create() {
 
 	//place score text on the screen
 	scoreText = game.add.text(5, 3, score);
+	scoreText.addColor('#ffff99', 0)
+
+	game.time.events.loop(1000, function() {
+		spawnFood();
+	}, game);
 }
 function update() {
 
@@ -78,6 +85,18 @@ function update() {
 
 	//call eatFood function when the player and a piece of food overlap
 	game.physics.arcade.overlap(player, food, eatFood);
+}
+
+function spawnFood() {
+	//spawn triangle randomly at the top of the screen
+	const foodHeight = height * (Math.random());
+	const foodWidth = width * (Math.random());
+	var newFood = game.add.sprite(foodWidth, foodHeight, "food");
+	game.physics.enable(food, Phaser.Physics.ARCADE);
+	//add physics body polygon
+	//move triangle downwards
+	//add triangle to the triangles group
+	food.add(newFood);
 }
 
 //eatFood function
